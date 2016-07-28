@@ -15,7 +15,8 @@ var opportunityDescription = document.getElementById('new-opportunity-descriptio
 
 //Miscellaneous elements
 var splashPage = document.getElementById('splash-page');
-var signInButton = document.getElementById('google-sign-in-button');
+var googleSignInButton = document.getElementById('google-sign-in-button');
+var epSignInButton = document.getElementById('ep-sign-in-button');
 var addOpportunity = document.getElementById('add-opportunity');
 var addButton = document.getElementById('add');
 var publicPostsSection = document.getElementById('public-posts-list');
@@ -115,17 +116,45 @@ function writeUserData(userId, name, email) {
   console.log("I am working")
 }
 window.addEventListener('load', function() {
-  // Bind Sign in button.
-  signInButton.addEventListener('click', function() {
-    var provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider);
+  // Bind Email and Password Sign in button.
+  epSignInButton.addEventListener('click', function() {
+    var email = document.getElementById('email').value;
+    var password = document.getElementById('userpass').value;
+    if (email.length < 4) {
+        alert('Please enter an email address.');
+        return;
+    }
+    if (password.length < 4) {
+      alert('Please enter a password.');
+      return;
+    }
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+          // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+          // [START_EXCLUDE]
+      if (errorCode === 'auth/wrong-password') {
+        alert('Wrong password.');
+      } else {
+        console.error(error);
+      }
+          // [END_EXCLUDE]
+      });
+    // var provider = new firebase.auth.GoogleAuthProvider();
+    // firebase.auth().signInWithPopup(provider);
   });
+  // Bind sign out button
   signOutButton.addEventListener('click', function(){
     firebase.auth().signOut().then(function() {
       console.log('Signed Out');
     }, function(error) {
         console.error('Sign Out Error', error);
       });
+  });
+  googleSignInButton.addEventListener('click', function(){
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider);
+    addButton.style.display = 'none';
   });
   // Listen for auth state changes
   firebase.auth().onAuthStateChanged(function(user) {
