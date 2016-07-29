@@ -24,6 +24,7 @@ var myPostsSection = document.getElementById('my-posts-list');
 var myFeedMenuButton = document.getElementById('my-feed');
 var publicFeedMenuButton = document.getElementById('public-feed');
 var signOutButton = document.getElementById('sign-out');
+
 /**
 Pushing opportunity to database/
 */
@@ -117,6 +118,7 @@ function writeUserData(userId, name, email) {
 }
 window.addEventListener('load', function() {
   // Bind Email and Password Sign in button.
+
   epSignInButton.addEventListener('click', function() {
     var email = document.getElementById('email').value;
     var password = document.getElementById('userpass').value;
@@ -143,6 +145,16 @@ window.addEventListener('load', function() {
     // var provider = new firebase.auth.GoogleAuthProvider();
     // firebase.auth().signInWithPopup(provider);
   });
+
+  googleSignInButton.addEventListener('click', function(){
+    var provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithPopup(provider); 
+  });
+
+  var user = firebase.auth().currentUser;
+ 
+  
+  
   // Bind sign out button
   signOutButton.addEventListener('click', function(){
     firebase.auth().signOut().then(function() {
@@ -151,20 +163,31 @@ window.addEventListener('load', function() {
         console.error('Sign Out Error', error);
       });
   });
-  googleSignInButton.addEventListener('click', function(){
-    var provider = new firebase.auth.GoogleAuthProvider();
-    firebase.auth().signInWithPopup(provider);
-    addButton.style.display = 'none';
-  });
+
   // Listen for auth state changes
   firebase.auth().onAuthStateChanged(function(user) {
+    
     if (user) {
-      splashPage.style.display = 'none';
-      writeUserData(user.uid, user.displayName, user.email);
-      startDatabaseQueries();
+      var providerName = user.providerData[0].providerId;
+      console.log(providerName);
+      if (providerName === "google.com") {
+        console.log('I come from Google');
+        addButton.style.display = 'none';
+        splashPage.style.display = 'none';
+        // addButton.style.display = 'none';
+        writeUserData(user.uid, user.displayName, user.email);
+        startDatabaseQueries();
+      } 
+      else if(providerName === "password") {
+        console.log('I come from Password');
+        splashPage.style.display = 'none';
+        writeUserData(user.uid, user.displayName, user.email);
+        startDatabaseQueries(); 
+      } 
     } else {
-      splashPage.style.display = 'block';
-    }
+        splashPage.style.display = 'block';
+      }
+
   });
 
   // Saves message on form submit.
