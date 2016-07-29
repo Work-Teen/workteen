@@ -24,7 +24,8 @@ var myPostsSection = document.getElementById('my-posts-list');
 var myFeedMenuButton = document.getElementById('my-feed');
 var publicFeedMenuButton = document.getElementById('public-feed');
 var signOutButton = document.getElementById('sign-out');
-
+var email = document.getElementById('email');
+var password = document.getElementById('userpass');
 /**
 Pushing opportunity to database/
 */
@@ -118,7 +119,7 @@ function writeUserData(userId, name, email) {
 }
 window.addEventListener('load', function() {
   // Bind Email and Password Sign in button.
-
+  
   epSignInButton.addEventListener('click', function() {
     var email = document.getElementById('email').value;
     var password = document.getElementById('userpass').value;
@@ -159,6 +160,8 @@ window.addEventListener('load', function() {
   signOutButton.addEventListener('click', function(){
     firebase.auth().signOut().then(function() {
       console.log('Signed Out');
+      email.value = '';
+      password.value = '';
     }, function(error) {
         console.error('Sign Out Error', error);
       });
